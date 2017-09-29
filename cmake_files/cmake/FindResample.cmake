@@ -92,6 +92,12 @@ else (RESAMPLE_LIB AND RESAMPLE_INCLUDE_DIRS)
 
     file(TO_CMAKE_PATH $ENV{RESAMPLE_DIR} RESAMPLE_DIR)
 
+    if(${MSVC_VERSION} EQUAL "1910")
+       set(VC_DIR "vs15")
+    else()
+       set(VC_DIR "vs14")
+    endif()
+
     if(RESAMPLE_DIR)
       message(STATUS "RESAMPLE_DIR=${RESAMPLE_DIR}")
     else(RESAMPLE_DIR)
@@ -111,6 +117,7 @@ else (RESAMPLE_LIB AND RESAMPLE_INCLUDE_DIRS)
         libresample.lib
       HINTS
         ${RESAMPLE_DIR}/lib
+        ${RESAMPLE_DIR}/lib/${VC_DIR}
         ${RESAMPLE_DIR}/*/Release
         ${RESAMPLE_DIR}/*/Degub
     )
@@ -120,6 +127,7 @@ else (RESAMPLE_LIB AND RESAMPLE_INCLUDE_DIRS)
         libresample.lib
       HINTS
         ${RESAMPLE_DIR}/lib
+        ${RESAMPLE_DIR}/lib/${VC_DIR}
         ${RESAMPLE_DIR}/*/Release
         ${RESAMPLE_DIR}/*/Degub
     )

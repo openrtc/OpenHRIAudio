@@ -103,6 +103,11 @@ message(STATUS "spx_lib_dir---> ${SPEEX_LIB_DIRS}")
 
     file(TO_CMAKE_PATH $ENV{SPEEX_DIR} SPEEX_DIR)
 
+    if(${MSVC_VERSION} EQUAL "1910")
+       set(VC_DIR "vs15")
+    else()
+       set(VC_DIR "vs14")
+    endif()
 
     if(SPEEX_DIR)
       message(STATUS "SPEEX_DIR=${SPEEX_DIR}")
@@ -125,6 +130,7 @@ message(STATUS "spx_lib_dir---> ${SPEEX_LIB_DIRS}")
         libspeex.lib
       HINTS
         ${SPEEX_DIR}/lib
+        ${SPEEX_DIR}/lib/${VC_DIR}
         ${SPEEX_DIR}/*/Release
         ${SPEEX_DIR}/*/Degub
       PATHS
@@ -136,6 +142,7 @@ message(STATUS "spx_lib_dir---> ${SPEEX_LIB_DIRS}")
         libspeexdsp.lib
       HINTS
         ${SPEEX_DIR}/lib
+        ${SPEEX_DIR}/lib/${VC_DIR}
         ${SPEEX_DIR}/*/Release
         ${SPEEX_DIR}/*/Degub
       PATHS
@@ -147,6 +154,7 @@ message(STATUS "spx_lib_dir---> ${SPEEX_LIB_DIRS}")
         libspeex.lib
       HINTS
         ${SPEEX_DIR}/*/lib
+        ${SPEEX_DIR}/lib/${VC_DIR}
         ${SPEEX_DIR}/*/Release
         ${SPEEX_DIR}/*/Degub
       PATHS

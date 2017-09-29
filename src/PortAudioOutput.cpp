@@ -318,6 +318,7 @@ int PortAudioOutput::WriteBuffer(void)
           m_waitflg = true;
         }
       }
+
       RTC_DEBUG(("WriteBuffer:audio buffer dequeue finish."));
 
       m_out_data.data.length(m_totalframes);  //!< set outport data length
