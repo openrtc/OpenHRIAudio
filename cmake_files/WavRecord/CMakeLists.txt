@@ -19,7 +19,9 @@ set(SRC_DIRS "${PROJECT_SOURCE_DIR}/../../src")
 
 # check LIB installed for OpenHRI
 find_package(SndFile REQUIRED)
-#find_package(gtkmm-2.4 REQUIRED)
+if (UNIX)
+find_package(gtkmm-2.4 REQUIRED)
+endif()
 
 ADD_DEFINITIONS(-DPACKAGE="${PACKAGE}" -DLOCALEDIR="${LOCALEDIR}")
 
