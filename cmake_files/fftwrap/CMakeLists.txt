@@ -8,7 +8,11 @@ project(fftwrap)
 
 set(SRC_DIRS "${PROJECT_SOURCE_DIR}/../../src")
 
+if (UNIX)
+add_definitions(-DUSE_SAMLLFT -DFLOATING_POINT)
+else ()
 add_definitions(-DUSE_SMALLFT)
+endif ()
 add_library(fftwrap SHARED ${SRC_DIRS}/fftwrap.c ${SRC_DIRS}/smallft.c)
 
 
