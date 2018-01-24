@@ -202,6 +202,7 @@ RTC::ReturnCode_t WavPlayer::onExecute(RTC::UniqueId ec_id)
   coil::TimeValue now = coil::gettimeofday();
   long bufferlen = long((now - m_timer) * m_samplerate);
   if ( bufferlen <= 0 ) return RTC::RTC_OK;
+
   m_timer = now;
   short *buffer = new short[bufferlen];
   sf_readf_short(sfr, buffer, bufferlen) ;
@@ -212,6 +213,13 @@ RTC::ReturnCode_t WavPlayer::onExecute(RTC::UniqueId ec_id)
   delete [] buffer;
 
   RTC_DEBUG(("onExecute finish"));
+
+  RTC::ExecutionContext_var ec = get_context(ec_id);
+  if (!CORBA::is_nil(ec))
+  {
+    ec->deactivate_component(::RTC::RTObject::_duplicate(getObjRef()));
+  }
+
   return RTC::RTC_OK;
 }
 

@@ -33,9 +33,14 @@ static char WaveFileName[512*2];
 class DialogWin : public Gtk::Window
 {
     Gtk::Label m_label;
+    Gtk::VBox m_box;
+    Gtk::Button m_ok;
+    Glib::ustring m_label_str;
 
 public:
-  DialogWin() {
+  DialogWin() 
+  : m_ok("OK")
+  {
     Gtk::FileChooserDialog diag( "ファイル選択", Gtk::FILE_CHOOSER_ACTION_OPEN );
     // 開く、キャンセルボタン
     diag.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
@@ -43,16 +48,28 @@ public:
     switch( diag.run() ){
     case Gtk::RESPONSE_OK:
       m_label.set_text( diag.get_filename() );
-      strncpy(WaveFileName, (diag.get_filename()).c_str(), (diag.get_filename()).size());
+      m_label_str = diag.get_filename();
+      //strncpy(WaveFileName, (diag.get_filename()).c_str(), (diag.get_filename()).size());
+      strncpy(WaveFileName, (diag.get_filename()).c_str(), strlen(diag.get_filename().c_str()));
       break;
     case Gtk::RESPONSE_CANCEL:
       m_label.set_text( "Cancel" );
+      m_label_str= "Cancel";
       //strncpy(WaveFileName, m_filename.c_str(), m_filename.size());
       break;
     }
-    add( m_label );
+    //add( m_label );
+    add( m_box );
+    m_box.pack_start(m_label);
+    m_ok.signal_clicked().connect(sigc::mem_fun(*this, &DialogWin::on_ok_clicked));
+    m_box.pack_start(m_ok);
     show_all_children();
     resize( 200, 100 );  
+  };
+
+  void on_ok_clicked(){
+    std::cout << "Click OK" << std::endl;
+    this->hide();
   };
 };
 #elif defined(_WIN32)
@@ -101,6 +118,11 @@ int main (int argc, char** argv)
   Gtk::Main kit(argc, argv);
   DialogWin dialogwin;
   Gtk::Main::run( dialogwin );
+  printf("Wave File Name:%s\n", WaveFileName);
+  if (strlen(WaveFileName) == 0){
+   exit(0);
+  }
+
 #elif defined(_WIN32)
   //HINSTANCE hInst = GetModuleHandle( NULL );
   HWND hwnd = GetWindow( NULL, GW_OWNER );
@@ -110,7 +132,6 @@ int main (int argc, char** argv)
 
 #endif
 
-  printf("Wave File Name:%s\n", WaveFileName);
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
