@@ -42,7 +42,7 @@ public:
   : m_ok("OK")
   {
     Gtk::FileChooserDialog diag( "ファイル選択", Gtk::FILE_CHOOSER_ACTION_OPEN );
-    // 開く、キャンセルボタン
+
     diag.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
     diag.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     switch( diag.run() ){
@@ -114,23 +114,30 @@ int main (int argc, char** argv)
 {
   RTC::Manager* manager;
 
+  if(argc == 1){
 #if defined(__linux)
   Gtk::Main kit(argc, argv);
   DialogWin dialogwin;
   Gtk::Main::run( dialogwin );
-  printf("Wave File Name:%s\n", WaveFileName);
-  if (strlen(WaveFileName) == 0){
-   exit(0);
-  }
+
 
 #elif defined(_WIN32)
   //HINSTANCE hInst = GetModuleHandle( NULL );
   HWND hwnd = GetWindow( NULL, GW_OWNER );
   OpenDiaog(hwnd,"Wave Files(*.wav)\0*.wav\0All Files(*.*)\0*.*\0\0",
 					WaveFileName,OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY);
-  printf("Wave File Name:%s\n", WaveFileName);
+  //printf("Wave File Name:%s\n", WaveFileName);
 
 #endif
+  }else{
+      strncpy(WaveFileName, argv[1], strlen(argv[1]));
+  }
+
+  if (strlen(WaveFileName) == 0){
+   exit(0);
+  }
+
+  printf("Wave File Name:%s\n", WaveFileName);
 
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);

@@ -228,6 +228,7 @@ class WavPlayer
   double m_pbuff;
   int m_cnt;
   int m_channels;              //!< config parameter(ChannelNumbers)
+  int m_delay;              //!< config parameter(Delay)
   // int m_freq;
   // int m_gain;
   bool m_flg;

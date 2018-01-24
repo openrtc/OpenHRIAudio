@@ -52,6 +52,7 @@ static const char* waveplayer_spec[] =
 #elif defined(_WIN32)
 	"conf.default.FileName", "c:\\work\\wavrecord-default.wav",
 #endif
+    "conf.default.Delay", "1",
     "conf.__widget__.OutputSampleRate", "spin",
     "conf.__constraints__.OutputSampleRate", "x >= 1",
     "conf.__description__.OutputSampleRate", N_("Sample rate of audio output."),
@@ -123,6 +124,7 @@ RTC::ReturnCode_t WavPlayer::onInitialize()
 
   bindParameter("OutputSampleRate", m_samplerate, "16000");
   bindParameter("ChannelNumbers", m_channels, "1");
+  bindParameter("Delay", m_delay, "1");
 #if defined(__linux)
 	bindParameter("FileName", m_filename, "wavrecord-default.wav");
 #ifdef SHARED_LIB
@@ -203,6 +205,7 @@ RTC::ReturnCode_t WavPlayer::onExecute(RTC::UniqueId ec_id)
   long bufferlen = long((now - m_timer) * m_samplerate);
   if ( bufferlen <= 0 ) return RTC::RTC_OK;
 
+  coil::sleep(m_delay);
   m_timer = now;
   short *buffer = new short[bufferlen];
   sf_readf_short(sfr, buffer, bufferlen) ;

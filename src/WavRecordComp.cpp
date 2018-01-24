@@ -152,23 +152,27 @@ int main (int argc, char** argv)
 {
   RTC::Manager* manager;
 
+  if(argc == 1){
+
 #if defined(__linux)
   Gtk::Main kit(argc, argv);
   DialogWin dialogwin;
   Gtk::Main::run( dialogwin );
-
-  printf("Wave File Name:%s\n", WaveFileName);
-  if (strlen(WaveFileName) == 0){
-   exit(0);
-  }
 
 #elif defined(_WIN32)
   //HINSTANCE hInst = GetModuleHandle( NULL );
   HWND hwnd = GetWindow( NULL, GW_OWNER );
   OpenDiaog(hwnd,"Wave Files(*.wav)\0*.wav\0All Files(*.*)\0*.*\0\0",
 					WaveFileName, OFN_CREATEPROMPT | OFN_OVERWRITEPROMPT);
-  printf("Wave File Name:%s\n", WaveFileName);
+  //printf("Wave File Name:%s\n", WaveFileName);
 #endif
+  }else{
+    strncpy(WaveFileName, argv[1], strlen(argv[1]));
+  }
+  printf("Wave File Name:%s\n", WaveFileName);
+  if (strlen(WaveFileName) == 0){
+   exit(0);
+  }
 
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
