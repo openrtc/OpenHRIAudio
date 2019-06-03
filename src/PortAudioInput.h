@@ -42,7 +42,7 @@
 #include <rtm/SystemLogger.h>
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -65,32 +65,6 @@
 #define HMIXER_NUM_MAX	(10)
 
 using namespace RTC;
-
-/*!
- * @class DataListener
- * @brief
- */
-class PortAudioInputDataListener
-  : public ConnectorDataListenerT<RTC::TimedLong>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  PortAudioInputDataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~PortAudioInputDataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedLong& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class PortAudioInput
@@ -365,6 +339,42 @@ class PortAudioInput
   // </rtc-template>
 
 };
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class PortAudioInputDataListener
+  : public ConnectorDataListenerT<RTC::TimedLong>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data PortAudio Object
+   */
+  PortAudioInputDataListener(const char* name, PortAudioInput *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~PortAudioInputDataListener(){};
+
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedLong& data){
+    if ( m_name == "ON_BUFFER_WRITE" ) {
+      m_obj->SetGain(data.data);
+    }
+
+    return NO_CHANGE;
+  };
+
+  PortAudioInput *m_obj;
+  std::string m_name;
+};
+
 extern "C"
 {
   /*!

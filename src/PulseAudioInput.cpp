@@ -58,30 +58,6 @@ static const char* pulseaudioinput_spec[] =
 
 /*!
  * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info, const TimedLong& data)
-{
-  if ( m_name == "ON_BUFFER_WRITE" ) {
-      PulseAudioInput *p = (PulseAudioInput *)m_obj;
-      p->SetGain(data.data);
-    }
-}
-
-/*!
- * @brief constructor
  * @param manager Maneger Object
  */
 PulseAudioInput::PulseAudioInput(RTC::Manager* manager)

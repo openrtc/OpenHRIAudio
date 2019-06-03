@@ -36,7 +36,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 #include "webrtc_vad.h"
 
@@ -55,31 +55,6 @@
 using namespace RTC;
 #define WINLEN 480
 
-/*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  DataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class WebRTCVAD
@@ -319,6 +294,41 @@ class WebRTCVAD
   // </rtc-template>
 
 };
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS
+
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data WebRTCVAD Object
+   */
+  DataListener(const char* name, WebRTCVAD *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener(){};
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedOctetSeq& data){
+    if ( m_name == "ON_BUFFER_WRITE" ) {
+      m_obj->RcvInBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+  WebRTCVAD *m_obj;
+  std::string m_name;
+};
+
 #if 0
 /*!
  * @class WebRTCVADManager

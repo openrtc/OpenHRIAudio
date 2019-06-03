@@ -43,7 +43,7 @@
 #include <coil/Mutex.h>
 
 #include <sndfile.h>
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -57,31 +57,6 @@
 
 using namespace RTC;
 
-/*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  DataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class WavRecord
@@ -319,6 +294,39 @@ class WavRecord
 
   // </rtc-template>
 
+};
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data WavRecord Object
+   */
+  DataListener(const char* name, WavRecord *data) : m_name(name), m_obj(data) {};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener(){};
+  virtual ReturnCode operator()( ConnectorInfo& info,
+                                 TimedOctetSeq& data){
+    if (m_name == "ON_BUFFER_WRITE") {
+      m_obj->RcvBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+  WavRecord *m_obj;
+  std::string m_name;
 };
 
 extern "C"

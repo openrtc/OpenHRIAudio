@@ -36,7 +36,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -67,31 +67,6 @@ using namespace RTC;
 #endif
 #define SONIC 340.29
 #define SEND_LENGTH 1024
-/*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  DataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class BeamForming
@@ -338,6 +313,39 @@ class BeamForming
 
   // </rtc-template>
 
+};
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data BeamForming Object
+   */
+  DataListener(const char* name, BeamForming *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener(){};
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedOctetSeq& data){
+    if (m_name == "ON_BUFFER_WRITE") {
+      m_obj->RcvBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+  BeamForming *m_obj;
+  std::string m_name;
 };
 
 extern "C"

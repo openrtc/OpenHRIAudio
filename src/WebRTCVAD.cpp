@@ -49,30 +49,6 @@ static const char* webrtcvad_spec[] =
 
 /*!
  * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info,const TimedOctetSeq& data)
-{
-  if ( m_name == "ON_BUFFER_WRITE" ) {
-    WebRTCVAD *p = (WebRTCVAD *)m_obj;
-    p->RcvInBuffer(data);
-  }
-}
-
-/*!
- * @brief constructor
  * @param manager Maneger Object
  */
 WebRTCVAD::WebRTCVAD(RTC::Manager* manager)
@@ -108,7 +84,6 @@ RTC::ReturnCode_t WebRTCVAD::onInitialize()
   /* setiing datalistener event */
   m_ninIn.addConnectorDataListener(ON_BUFFER_WRITE,
                         new DataListener("ON_BUFFER_WRITE", this));
-
   // Set OutPort buffer
   addOutPort("AudioDataOut", m_foutOut);
   m_foutOut.setDescription(_("Audio data output."));

@@ -41,7 +41,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -326,6 +326,45 @@ class PulseAudioOutput
 
   // </rtc-template>
 
+};
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data PulseAudioOutput Object
+   */
+  DataListener(const char *name, PulseAudioOutput *data) : m_name(name), m_obj(data) {};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener() {};
+
+  /*!
+   * @brief callback
+   */
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedOctetSeq& data) 
+  {
+    if( m_name == "ON_BUFFER_WRITE"){
+      m_obj->RcvBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+private:
+  PulseAudioOutput *m_obj;
+  std::string m_name;
 };
 
 extern "C"

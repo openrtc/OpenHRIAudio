@@ -63,41 +63,6 @@ static const char* pulseaudiooutput_spec[] =
 // </rtc-template>
 
 /*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param data PulseAudio Object
-   */
-  DataListener(void *data) {
-    m_obj = data;
-  };
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener() {};
-
-  /*!
-   * @brief callback
-   */
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data) {
-    PulseAudioOutput *p = (PulseAudioOutput *)m_obj;
-    p->RcvBuffer(data);
-  };
-
-private:
-  void *m_obj;
-};
-
-/*!
  * @brief constructor
  */
 PulseAudioOutput::PulseAudioOutput(RTC::Manager* manager)
@@ -131,7 +96,8 @@ RTC::ReturnCode_t PulseAudioOutput::onInitialize()
   m_in_dataIn.setDescription(_("Audio data input."));
 
   /* setting datalistener event */
-  m_in_dataIn.addConnectorDataListener(ON_BUFFER_WRITE, new DataListener(this), false);
+  m_in_dataIn.addConnectorDataListener(ON_BUFFER_WRITE,
+		  new DataListener("ON_BUFFER_WRITE", this), false);
 
   // Set OutPort buffer
   registerOutPort("AudioDataOut", m_out_dataOut);

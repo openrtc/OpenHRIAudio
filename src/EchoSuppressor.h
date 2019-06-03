@@ -35,7 +35,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -49,32 +49,6 @@
 
 using namespace RTC;
 #define BUFFER_MAX 65536
-
-/*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  DataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class EchoSuppressor
@@ -318,6 +292,43 @@ class EchoSuppressor
   // </rtc-template>
 
 };
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data EchoSuppressor Object
+   */
+  DataListener(const char* name, EchoSuppressor *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener(){};
+
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedOctetSeq& data){
+    if( m_name == "ON_BUFFER_WRITE_N" ) {
+      m_obj->RcvInBuffer(data);
+    } else if( m_name == "ON_BUFFER_WRITE_F" ) {
+      m_obj->RcvOutBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+  EchoSuppressor *m_obj;
+  std::string m_name;
+};
+
 #if 0
 /*!
  * @class EchoSuppressorManager

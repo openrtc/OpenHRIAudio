@@ -37,7 +37,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -51,32 +51,6 @@
 
 #define FRAMES_PER_BUFFER (512)
 using namespace RTC;
-
-/*!
- * @class PortAudioOutputDataListener
- * @brief
- */
-class PortAudioOutputDataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name PortAudioOutputDataListener event name
-   * @param data PortAudio Object
-   */
-  PortAudioOutputDataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~PortAudioOutputDataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class PortAudioOutput
@@ -340,6 +314,41 @@ class PortAudioOutput
   // </rtc-template>
 
 };
+
+/*!
+ * @class PortAudioOutputDataListener
+ * @brief
+ */
+class PortAudioOutputDataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name PortAudioOutputDataListener event name
+   * @param data PortAudio Object
+   */
+  PortAudioOutputDataListener(const char* name, PortAudioOutput *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~PortAudioOutputDataListener(){};
+
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedOctetSeq& data){
+    if ( m_name == "ON_BUFFER_WRITE" ) {
+      m_obj->RcvBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+  PortAudioOutput *m_obj;
+  std::string m_name;
+};
+
 #if 0
 /*!
  * @class PortAudioOutputManager

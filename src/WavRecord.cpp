@@ -91,29 +91,6 @@ int OpenDiaog(HWND hwnd,LPCSTR Filter,char *FileName,DWORD Flags)
 
 /*!
  * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info,const TimedOctetSeq& data)
-{
-  WavRecord *p = (WavRecord *) m_obj;
-  if (m_name == "ON_BUFFER_WRITE") {
-    p->RcvBuffer(data);
-  }
-}
-/*!
- * @brief constructor
  * @param manager Maneger Object
  */
 WavRecord::WavRecord(RTC::Manager* manager)

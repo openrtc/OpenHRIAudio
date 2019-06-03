@@ -46,32 +46,6 @@ static const char* echosuppressor_spec[] =
 
 /*!
  * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info,const TimedOctetSeq& data)
-{
-  EchoSuppressor *p = (EchoSuppressor *)m_obj;
-  if( m_name == "ON_BUFFER_WRITE_N" ) {
-    p->RcvInBuffer(data);
-  } else if( m_name == "ON_BUFFER_WRITE_F" ) {
-    p->RcvOutBuffer(data);
-  }
-}
-
-/*!
- * @brief constructor
  * @param manager Maneger Object
  */
 EchoSuppressor::EchoSuppressor(RTC::Manager* manager)

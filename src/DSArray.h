@@ -40,7 +40,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 #include "windowing.h"
 
 // Service implementation headers
@@ -66,32 +66,6 @@ using namespace RTC;
 #define SONIC 340.29
 #define WINLEN 2048
 #define SEARCHMAX 100
-
-/*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  DataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedOctetSeq& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class DSArray
@@ -335,6 +309,40 @@ class DSArray
   int CrossCorrelation(short *base, short *data);
   // </rtc-template>
 
+};
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedOctetSeq>
+{
+  USE_CONNLISTENER_STATUS;
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data DSArray Object
+   */
+  DataListener(const char* name, DSArray *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener(){};
+
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedOctetSeq& data){
+    if (m_name == "ON_BUFFER_WRITE") {
+      m_obj->RcvBuffer(data);
+    }
+    return NO_CHANGE;
+  };
+
+  DSArray *m_obj;
+  std::string m_name;
 };
 
 extern "C"

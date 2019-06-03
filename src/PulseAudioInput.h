@@ -42,7 +42,7 @@
 
 #include <coil/Mutex.h>
 
-#include "DescriptablePort.h"
+#include "OpenHRI.h"
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -67,32 +67,6 @@ struct simple_recast {
 };
 
 using namespace RTC;
-
-/*!
- * @class DataListener
- * @brief
- */
-class DataListener
-  : public ConnectorDataListenerT<RTC::TimedLong>
-{
-public:
-  /*!
-   * @brief constructor
-   *
-   * @param name DataListener event name
-   * @param data PortAudio Object
-   */
-  DataListener(const char* name, void *data);
-
-  /*!
-   * @brief destructor
-   */
-  virtual ~DataListener();
-  virtual void operator()(const ConnectorInfo& info,
-                          const TimedLong& data);
-  void *m_obj;
-  std::string m_name;
-};
 
 /*!
  * @class PulseAudioInput
@@ -344,6 +318,39 @@ class PulseAudioInput
 
   // </rtc-template>
 
+};
+
+/*!
+ * @class DataListener
+ * @brief
+ */
+class DataListener
+  : public ConnectorDataListenerT<RTC::TimedLong>
+{
+public:
+  /*!
+   * @brief constructor
+   *
+   * @param name DataListener event name
+   * @param data PulseAudioInput Object
+   */
+  DataListener(const char* name, PulseAudioInput *data) : m_name(name), m_obj(data){};
+
+  /*!
+   * @brief destructor
+   */
+  virtual ~DataListener(){};
+  virtual ReturnCode operator()(_CONST ConnectorInfo& info,
+                                _CONST TimedLong& data) {
+    if ( m_name == "ON_BUFFER_WRITE" ) {
+      m_obj->SetGain(data.data);
+    }
+
+    return NO_CHANGE;
+  }
+
+  PulseAudioInput *m_obj;
+  std::string m_name;
 };
 
 extern "C"

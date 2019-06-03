@@ -64,30 +64,6 @@ enum {DEPTH8, DEPTH16, DEPTH24, DEPTH32, DEPTHFLOAT32};
 
 /*!
  * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info,const TimedOctetSeq& data)
-{
-  if ( m_name == "ON_BUFFER_WRITE" ) {
-    SamplingRateConverter *p = (SamplingRateConverter *)m_obj;
-    p->RcvInBuffer(data);
-  }
-}
-
-/*!
- * @brief constructor
  * @param manager Maneger Object
  */
 SamplingRateConverter::SamplingRateConverter(RTC::Manager* manager)

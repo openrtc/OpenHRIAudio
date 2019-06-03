@@ -61,30 +61,6 @@ static const char* channelselector_spec[] =
 
 /*!
  * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info,const TimedOctetSeq& data)
-{
-  if ( m_name == "ON_BUFFER_WRITE" ) {
-    ChannelSelector *p = (ChannelSelector *)m_obj;
-    p->RcvInBuffer(data);
-  }
-}
-
-/*!
- * @brief constructor
  * @param manager Maneger Object
  */
 ChannelSelector::ChannelSelector(RTC::Manager* manager)

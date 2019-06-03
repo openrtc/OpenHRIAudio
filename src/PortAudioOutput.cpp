@@ -62,30 +62,6 @@ const char* portaudiooutput_spec[] =
   };
 // </rtc-template>
 
-/*!
- * @brief constructor
- */
-PortAudioOutputDataListener::PortAudioOutputDataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-PortAudioOutputDataListener::~PortAudioOutputDataListener()
-{
-}
-
-void PortAudioOutputDataListener::operator ()(const ConnectorInfo& info, const TimedOctetSeq& data)
-{
-  if ( m_name == "ON_BUFFER_WRITE" ) {
-    PortAudioOutput *p = (PortAudioOutput *)m_obj;
-    p->RcvBuffer(data);
-  }
-}
-
 static int StreamCB( const void *inputBuffer,
 		     void *outputBuffer,
 		     unsigned long framesPerBuffer,

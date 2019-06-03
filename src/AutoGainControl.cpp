@@ -61,29 +61,6 @@ static const char* autogaincontrol_spec[] =
   };
 // </rtc-template>
 
-/*!
- * @brief constructor
- */
-DataListener::DataListener(const char *name, void* data)
-{
-  m_obj = data;
-  m_name = name;
-}
-
-/*!
- * @brief destructor
- */
-DataListener::~DataListener()
-{
-}
-
-void DataListener::operator ()(const ConnectorInfo& info, const TimedOctetSeq& data)
-{
-  if ( m_name == "ON_BUFFER_WRITE" ) {
-      AutoGainControl *p = (AutoGainControl *)m_obj;
-      p->RcvBuffer(data);
-    }
-}
 
 /*!
  * @brief constructor
